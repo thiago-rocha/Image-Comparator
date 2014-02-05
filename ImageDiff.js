@@ -7,17 +7,16 @@ ImageDiff.prototype._canvas = null;
 
 ImageDiff.prototype._canvasContext = null;
 
-ImageDiff.prototype.find = function(imgSrc1, imgSrc2) {
+ImageDiff.prototype.find = function(imgSrc1, imgSrc2, threshold) {
     var instance = this,
         image1 = new Image(),
         image2 = new Image(),
         imageLoaded = false;
 
     image1.onload = function() {
-
         if (imageLoaded) {
             instance._drawAbutImages(image1, image2);
-            instance._scan(image1, image2);
+            instance._scan(image1, image2, threshold);
         }
 
         imageLoaded = true;
@@ -26,16 +25,17 @@ ImageDiff.prototype.find = function(imgSrc1, imgSrc2) {
     image1.src = imgSrc1;
 
     image2.onload = function() {
-
         if (imageLoaded) {
             instance._drawAbutImages(image1, image2);
-            instance._scan(image1, image2);
+            instance._scan(image1, image2, threshold);
         }
 
         imageLoaded = true;
     };
 
     image2.src = imgSrc2;
+
+
 };
 
 ImageDiff.prototype._drawAbutImages = function(image1, image2) {
@@ -50,33 +50,26 @@ ImageDiff.prototype._drawAbutImages = function(image1, image2) {
 
 };
 
-ImageDiff.prototype._scan = function(image1, image2) {
+ImageDiff.prototype._scan = function(image1, image2, threshold) {
     var instance = this,
         context = instance._canvasContext,
+
         currentPosition,
-        initialPosition,
-        jump,
-        abs = Math.abs,
-        round = Math.round,
-        size = image1.width * image1.height,
+        diffCount = 0,
+        size = image1.width * image1.height * 4,
+        ts = Math.round(threshold * size * 0.25),
         imageData1 = context.getImageData(0, 0, image1.width, image1.height).data,
         imageData2 = context.getImageData(0, image1.height, image2.width, image2.height).data;
 
-    context.fillStyle = 'rgb(255, 0, 0)';
-
-    for (jump = size; jump > 1; jump = initialPosition) {
-        initialPosition = round(jump / 2);
-        for (currentPosition = initialPosition; currentPosition < size; currentPosition += jump) {
-            if (abs(imageData1[currentPosition] - imageData2[currentPosition]) > 10) {
+    for (currentPosition = 0; currentPosition < size; currentPosition += 4) {
+        if ((imageData1[currentPosition] !== imageData2[currentPosition]) || (imageData1[currentPosition + 1] !== imageData2[currentPosition + 1]) || (imageData1[currentPosition + 2] !== imageData2[currentPosition + 2])) {
+            diffCount++;
+            //console.log('1');
+            if (diffCount >= ts) {
                 return 1;
             }
         }
     }
-
+    //console.log('0');
     return 0;
-};
-
-exports.ImageDiff = function(is1, is2) {
-    var qualquerCoisa = new ImageDiff();
-    qualquerCoisa.find(s1, s2);
 };
