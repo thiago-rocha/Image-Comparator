@@ -7,35 +7,28 @@ ImageDiff.prototype._canvas = null;
 
 ImageDiff.prototype._canvasContext = null;
 
-ImageDiff.prototype.find = function(imgSrc1, imgSrc2, threshold) {
+ImageDiff.prototype.find = function(imgSrc1, imgSrc2, threshold, callback) {
     var instance = this,
         image1 = new Image(),
         image2 = new Image(),
-        imageLoaded = false;
+        imageLoaded = false,
+        imageClass = 0;
 
     image1.onload = function() {
-        if (imageLoaded) {
-            instance._drawAbutImages(image1, image2);
-            instance._scan(image1, image2, threshold);
-        }
-
+        image2.src = imgSrc2;
         imageLoaded = true;
     };
 
     image1.src = imgSrc1;
 
     image2.onload = function() {
-        if (imageLoaded) {
-            instance._drawAbutImages(image1, image2);
-            instance._scan(image1, image2, threshold);
-        }
+        instance._drawAbutImages(image1, image2);
+        imageClass = instance._scan(image1, image2, threshold);
 
         imageLoaded = true;
+
+        callback.apply(window, [imageClass]);
     };
-
-    image2.src = imgSrc2;
-
-
 };
 
 ImageDiff.prototype._drawAbutImages = function(image1, image2) {
@@ -47,7 +40,6 @@ ImageDiff.prototype._drawAbutImages = function(image1, image2) {
     canvas.height = 2 * image1.height;
     context.drawImage(image1, 0, 0);
     context.drawImage(image2, 0, image1.height);
-
 };
 
 ImageDiff.prototype._scan = function(image1, image2, threshold) {
@@ -64,12 +56,10 @@ ImageDiff.prototype._scan = function(image1, image2, threshold) {
     for (currentPosition = 0; currentPosition < size; currentPosition += 4) {
         if ((imageData1[currentPosition] !== imageData2[currentPosition]) || (imageData1[currentPosition + 1] !== imageData2[currentPosition + 1]) || (imageData1[currentPosition + 2] !== imageData2[currentPosition + 2])) {
             diffCount++;
-            //console.log('1');
             if (diffCount >= ts) {
                 return 1;
             }
         }
     }
-    //console.log('0');
     return 0;
 };
