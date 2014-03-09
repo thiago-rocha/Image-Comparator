@@ -2,7 +2,7 @@ ImageComparator
 ---
 ==========
 
-Comparing image pixel values with a threshold using phantomjs.
+Compare image pixel values with a threshold using phantomjs.
 
 Getting Started
 ---
