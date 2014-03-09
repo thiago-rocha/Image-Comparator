@@ -23,4 +23,4 @@ Call function *compare* and pass two image to be compared a threshold and a call
             phantom.exit();
         });
         
-'result' are 0 if the difference is less than the threshold and 1 if the difference is greater than the threshold.
+`result` are `0` if the difference is less than the threshold and `1` if the difference is greater than the threshold.
