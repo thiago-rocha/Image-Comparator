@@ -45,7 +45,6 @@ ImageComparator.prototype._drawAbutImages = function(image1, image2) {
 ImageComparator.prototype._scan = function(image1, image2, threshold) {
     var instance = this,
         context = instance._canvasContext,
-
         currentPosition,
         diffCount = 0,
         size = image1.width * image1.height * 4,
@@ -63,9 +62,3 @@ ImageComparator.prototype._scan = function(image1, image2, threshold) {
     }
     return 0;
 };
-
-var imageComparator = new ImageComparator();
-imageComparator.compare('file:///Users/thiagorocha/Projects/Image-Diff/images/export_import_1.png', 'file:///Users/thiagorocha/Projects/Image-Diff/images/export_import_2.png', 0.001, function(result) {
-    console.log(result);
-    phantom.exit();
-});
